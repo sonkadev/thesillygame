@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
 
 #define MAP_HEIGHT 6
 #define MAP_WIDTH  10
@@ -9,11 +10,18 @@ int game(int OpenSave){
 
     int x = 3;
     int y = 3;
+    int hp = 10;
+    int atk = 2;
+    int cats = 0;
+    int catdmg = 0;
+    int lvl = 1;
+
+    srand(time(NULL));
 
     if(OpenSave == 1) { 
         savefile = fopen("./saves/save", "r");
         if(savefile != NULL) { 
-            if(fscanf(savefile, "%d %d", &x, &y) != 2) { 
+            if(fscanf(savefile, "%d %d %d %d %d %d %d", &x, &y, &hp, &atk, &cats, &catdmg, &lvl) != 6) { 
                 x = 3;
                 y = 3;
             }
@@ -21,6 +29,9 @@ int game(int OpenSave){
         }
     }
     
+    int catchance = rand() % 100;
+    int ratchance = rand() % 100;
+   
 
     int map[MAP_WIDTH][MAP_HEIGHT];
 
@@ -28,7 +39,15 @@ int game(int OpenSave){
 
     char input[2];
     while(e < 1){
+
         printf("\e[1;1H\e[2J");
+
+        /*if(catchance < 25){
+            fgets(input, 2, stdin);
+            cats++;
+            printf("You have stumbled upon a cat! (+1 cat)\n");
+        }*/
+
         for(int iy = 1; iy <= MAP_HEIGHT; iy++){
             for(int ix = 1; ix <= MAP_WIDTH; ix++){
                 if(x == ix && y == iy){
@@ -64,9 +83,10 @@ int game(int OpenSave){
         }
         if(strcmp(input, "v") == 0) {
             savefile = fopen("./saves/save", "w");
-            fprintf(savefile, "%d\n%d",x , y);
+            fprintf(savefile, "%d\n%d\n%d\n%d\n%d\n%d",x, y, hp, atk, cats, catdmg, lvl);
             fclose(savefile); 
         }
+
         input == "";
         }     
   }
@@ -78,6 +98,11 @@ int main(){
     printf("the silly game demo thingy\n");
     printf("press enter to start a new game, o to open the save files\n");
     fgets(input, sizeof(input), stdin);
+    if(strcmp(input, "o") == 0){
+        game(1);
+    }
+    else{
     game(0);
+    }
     return 0;
 }
